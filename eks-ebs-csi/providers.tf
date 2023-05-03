@@ -4,6 +4,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  config_path    = "~/.kube/config"
-  config_context = "arn:aws:eks:eu-central-1:085504592630:cluster/test"
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
 }

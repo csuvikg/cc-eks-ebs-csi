@@ -5,6 +5,7 @@ resource "kubernetes_storage_class" "this" {
   storage_provisioner = "ebs.csi.aws.com"
 }
 
+# An example usage
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
     name = "nginx-pvc"

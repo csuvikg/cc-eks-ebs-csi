@@ -1,11 +1,11 @@
 # EBS CSI role
-data "aws_iam_policy_document" "ebs_csi_driver_assume_role_policy" {
+data "aws_iam_policy_document" "this" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     condition {
       test     = "StringEquals"
-      variable = "oidc.eks.${var.region}.amazonaws.com/id/${var.oidc_provider_id}:aud"
+      variable = "${local.oidc_provider_url}:aud"
 
       values = [
         "sts.amazonaws.com"
@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "ebs_csi_driver_assume_role_policy" {
 
     condition {
       test     = "StringEquals"
-      variable = "oidc.eks.${var.region}.amazonaws.com/id/${var.oidc_provider_id}:sub"
+      variable = "${local.oidc_provider_url}:sub"
 
       values = [
         "system:serviceaccount:kube-system:ebs-csi-controller-sa"
@@ -23,17 +23,17 @@ data "aws_iam_policy_document" "ebs_csi_driver_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::${var.account_id}:oidc-provider/oidc.eks.${var.region}.amazonaws.com/id/${var.oidc_provider_id}"]
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
     }
   }
 }
 
-resource "aws_iam_role" "ebs_csi_driver" {
+resource "aws_iam_role" "this" {
   name               = "AmazonEKS_EBS_CSI_DriverRole"
-  assume_role_policy = data.aws_iam_policy_document.ebs_csi_driver_assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.this.json
 }
 
-resource "aws_iam_role_policy_attachment" "ebs_csi_driver_policy_attachment" {
-  role       = aws_iam_role.ebs_csi_driver.name
+resource "aws_iam_role_policy_attachment" "this" {
+  role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }

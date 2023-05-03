@@ -1,11 +1,3 @@
-variable "region" {
-  type = string
-}
-
-variable "oidc_provider_id" {
-  type = string
-}
-
-variable "account_id" {
+variable "eks_cluster_name" {
   type = string
 }
